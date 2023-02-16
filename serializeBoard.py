@@ -17,7 +17,7 @@ for serialization in range(19683):
         continue
     ai, player = board.getSums()
     if ai == player or ai + 1 == player:
-        board.makeMove(getBestAiMove(board))
+        board.makeMove(getBestAiMove(board, States.TARGET))
         outcomes[serialization] = board.serialize()
 
 with open("Output/shortened.csv", "w+") as outFile:

@@ -5,6 +5,7 @@ class States(Enum):
     EMPTY = 0
     AI = 1
     PLAYER = 2
+    TARGET = 3
 
 class Move:
     x, y = None, None
@@ -34,7 +35,7 @@ class Board:
         output = 0
         for row in self.currentBoard:
             for square in row:
-                squareValue = 1 if square == States.AI else 0
+                squareValue = 1 if square == States.AI or square == States.TARGET else 0
                 squareValue = 2 if square == States.PLAYER else squareValue
                 output += squareValue * multiplication
                 multiplication *= 3
@@ -154,10 +155,10 @@ def miniMax(board, isMaximizing):
 
     return bestEvaluation
 
-def getBestAiMove(board):
+def getBestAiMove(board, state):
     bestScore = -100
     bestMove = None
-    for possibleMove in board.getMoves(States.AI):
+    for possibleMove in board.getMoves(state):
         board.makeMove(possibleMove)
         outcome = miniMax(board, False)
         if outcome > bestScore:
@@ -174,7 +175,7 @@ def printStatus():
 def aiTurn():
     global lastTime
     lastTime = time.time()
-    board.makeMove(getBestAiMove(board))
+    board.makeMove(getBestAiMove(board, States.AI))
     printStatus()
 
 def playerTurn():
