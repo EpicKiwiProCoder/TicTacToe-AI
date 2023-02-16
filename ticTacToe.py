@@ -120,9 +120,12 @@ class Board:
             print("\n")
 
 
-def miniMax(isMaximizing):
-    global amountOfConsiderations
-    amountOfConsiderations += 1
+def miniMax(board, isMaximizing):
+    try:
+        global amountOfConsiderations
+        amountOfConsiderations += 1
+    except:
+        pass
     evaluation = board.evaluate()
     if evaluation == 1:
         return 1
@@ -136,7 +139,7 @@ def miniMax(isMaximizing):
 
         for possibleMove in board.getMoves(States.AI):
             board.makeMove(possibleMove)
-            bestResponse = miniMax(not isMaximizing)
+            bestResponse = miniMax(board, not isMaximizing)
             bestEvaluation = max(bestResponse, bestEvaluation)
             board.unmakeMove(possibleMove)
     
@@ -145,18 +148,18 @@ def miniMax(isMaximizing):
 
         for possibleMove in board.getMoves(States.PLAYER):
             board.makeMove(possibleMove)
-            bestResponse = miniMax(not isMaximizing)
+            bestResponse = miniMax(board, not isMaximizing)
             bestEvaluation = min(bestResponse, bestEvaluation)
             board.unmakeMove(possibleMove)
 
     return bestEvaluation
 
-def getBestAiMove():
+def getBestAiMove(board):
     bestScore = -100
     bestMove = None
     for possibleMove in board.getMoves(States.AI):
         board.makeMove(possibleMove)
-        outcome = miniMax(False)
+        outcome = miniMax(board, False)
         if outcome > bestScore:
             bestMove = possibleMove
             bestScore = outcome
@@ -171,11 +174,11 @@ def printStatus():
 def aiTurn():
     global lastTime
     lastTime = time.time()
-    board.makeMove(getBestAiMove())
+    board.makeMove(getBestAiMove(board))
     printStatus()
 
 def playerTurn():
-    inputLocation = int(input(">"))-1
+    inputLocation = int(input("1-9 >"))-1
     suggestedMove = Move((inputLocation%3,inputLocation//3), States.PLAYER)
     if board.isMoveValid(suggestedMove):
         board.makeMove(suggestedMove)
@@ -183,7 +186,7 @@ def playerTurn():
         print("Invalid Move")
         playerTurn()
 
-def checkWinState():
+def checkWinState(board):
     boardEvaluation = board.evaluate()
     if boardEvaluation > 0:
         board.display()
@@ -194,6 +197,8 @@ def checkWinState():
         print("\nYou have won. (this shouldn't be possible if the Ai is working correctly)\n")
         return False
     elif board.isFull():
+        board.display()
+        print("\nIt's a draw.\n")
         return False
     return True
 
@@ -203,7 +208,7 @@ def main():
     board = Board() # [[States.PLAYER, States.EMPTY, States.PLAYER],[States.AI,States.EMPTY,States.EMPTY],[States.AI,States.EMPTY,States.EMPTY]]
 
     isPlayersTurn = True
-    while checkWinState():
+    while checkWinState(board):
         if isPlayersTurn:
             board.display()
             playerTurn()
