@@ -35,7 +35,7 @@ board = Board() # [[States.PLAYER, States.EMPTY, States.PLAYER],[States.AI,State
 
 moveDatabase = open("Output/allMoves.txt", "r").readlines()
 
-isPlayersTurn = True
+isPlayersTurn = False
 while checkWinState():
     if isPlayersTurn:
         board.display()

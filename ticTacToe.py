@@ -35,7 +35,8 @@ class Board:
         output = 0
         for row in self.currentBoard:
             for square in row:
-                squareValue = 1 if square == States.AI or square == States.TARGET else 0
+                squareValue = 1 if (square == States.AI) else 0
+                squareValue = 1 if square == States.TARGET else squareValue
                 squareValue = 2 if square == States.PLAYER else squareValue
                 output += squareValue * multiplication
                 multiplication *= 3
