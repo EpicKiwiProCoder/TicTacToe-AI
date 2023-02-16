@@ -1,5 +1,7 @@
 from enum import Enum
-import random, time
+import random
+import time
+
 
 class States(Enum):
     EMPTY = 0
@@ -7,17 +9,21 @@ class States(Enum):
     PLAYER = 2
     TARGET = 3
 
+
 class Move:
     x, y = None, None
     state = None
+
     def __init__(self, location, state):
         self.x = location[0]
         self.y = location[1]
         self.state = state
 
+
 class Board:
     currentBoard = []
-    def __init__(self, initialBoard = [[States.EMPTY]*3]+[[States.EMPTY]*3]+[[States.EMPTY]*3]) -> None:
+
+    def __init__(self, initialBoard=[[States.EMPTY]*3]+[[States.EMPTY]*3]+[[States.EMPTY]*3]) -> None:
         self.currentBoard = initialBoard
 
     def isMoveValid(self, move) -> bool:
@@ -41,13 +47,13 @@ class Board:
                 output += squareValue * multiplication
                 multiplication *= 3
         return output
-    
+
     def deserialize(self, serialization):
         division = 1
         for x in range(3):
             for y in range(3):
                 squareValue = serialization / division % 3
-                
+
                 if squareValue == 0:
                     self.currentBoard[x][y] = States.EMPTY
                 if squareValue == 1:
@@ -65,36 +71,36 @@ class Board:
                 if square == States.EMPTY:
                     allMoves.append(Move((x, y), state))
         return allMoves
-    
+
     def makeMove(self, move) -> None:
         self.currentBoard[move.x][move.y] = move.state
-    
+
     def unmakeMove(self, move) -> None:
         self.currentBoard[move.x][move.y] = States.EMPTY
 
     def evaluate(self) -> int:
         b = self.currentBoard
-        for row in range(3) :    
-            if (b[row][0] == b[row][1] and b[row][1] == b[row][2]) :       
-                if (b[row][0] == States.PLAYER) :
+        for row in range(3):
+            if (b[row][0] == b[row][1] and b[row][1] == b[row][2]):
+                if (b[row][0] == States.PLAYER):
                     return -1
-                elif (b[row][0] == States.AI) :
+                elif (b[row][0] == States.AI):
                     return 1
-        for col in range(3) :
-            if (b[0][col] == b[1][col] and b[1][col] == b[2][col]) :
-                if (b[0][col] == States.PLAYER) :
+        for col in range(3):
+            if (b[0][col] == b[1][col] and b[1][col] == b[2][col]):
+                if (b[0][col] == States.PLAYER):
                     return -1
-                elif (b[0][col] == States.AI) :
+                elif (b[0][col] == States.AI):
                     return 1
-        if (b[0][0] == b[1][1] and b[1][1] == b[2][2]) :
-            if (b[0][0] == States.PLAYER) :
+        if (b[0][0] == b[1][1] and b[1][1] == b[2][2]):
+            if (b[0][0] == States.PLAYER):
                 return -1
-            elif (b[0][0] == States.AI) :
+            elif (b[0][0] == States.AI):
                 return 1
-        if (b[0][2] == b[1][1] and b[1][1] == b[2][0]) :
-            if (b[0][2] == States.PLAYER) :
+        if (b[0][2] == b[1][1] and b[1][1] == b[2][0]):
+            if (b[0][2] == States.PLAYER):
                 return -1
-            elif (b[0][2] == States.AI) :
+            elif (b[0][2] == States.AI):
                 return 1
         return 0
 
@@ -104,9 +110,9 @@ class Board:
         for row in self.currentBoard:
             for i in row:
                 if i == States.AI:
-                    ai+=1
+                    ai += 1
                 if i == States.PLAYER:
-                    player+=1
+                    player += 1
         return (ai, player)
 
     def display(self) -> None:
@@ -144,7 +150,7 @@ def miniMax(board, isMaximizing):
             bestResponse = miniMax(board, not isMaximizing)
             bestEvaluation = max(bestResponse, bestEvaluation)
             board.unmakeMove(possibleMove)
-    
+
     else:
         bestEvaluation = 100
 
@@ -155,6 +161,7 @@ def miniMax(board, isMaximizing):
             board.unmakeMove(possibleMove)
 
     return bestEvaluation
+
 
 def getBestAiMove(board, state):
     bestScore = -100
@@ -168,10 +175,13 @@ def getBestAiMove(board, state):
         board.unmakeMove(possibleMove)
     return bestMove
 
+
 def printStatus():
     global amountOfConsiderations
-    print(f"\nConsidered {amountOfConsiderations} positions in {round(time.time()-lastTime, 3)}s\n")
+    print(
+        f"\nConsidered {amountOfConsiderations} positions in {round(time.time()-lastTime, 3)}s\n")
     amountOfConsiderations = 0
+
 
 def aiTurn():
     global lastTime
@@ -179,14 +189,16 @@ def aiTurn():
     board.makeMove(getBestAiMove(board, States.AI))
     printStatus()
 
+
 def playerTurn():
     inputLocation = int(input("1-9 >"))-1
-    suggestedMove = Move((inputLocation%3,inputLocation//3), States.PLAYER)
+    suggestedMove = Move((inputLocation % 3, inputLocation//3), States.PLAYER)
     if board.isMoveValid(suggestedMove):
         board.makeMove(suggestedMove)
     else:
         print("Invalid Move")
         playerTurn()
+
 
 def checkWinState(board):
     boardEvaluation = board.evaluate()
@@ -196,7 +208,8 @@ def checkWinState(board):
         return False
     elif boardEvaluation < 0:
         board.display()
-        print("\nYou have won. (this shouldn't be possible if the Ai is working correctly)\n")
+        print(
+            "\nYou have won. (this shouldn't be possible if the Ai is working correctly)\n")
         return False
     elif board.isFull():
         board.display()
@@ -204,10 +217,12 @@ def checkWinState(board):
         return False
     return True
 
+
 def main():
     global board, amountOfConsiderations
     amountOfConsiderations = 0
-    board = Board() # [[States.PLAYER, States.EMPTY, States.PLAYER],[States.AI,States.EMPTY,States.EMPTY],[States.AI,States.EMPTY,States.EMPTY]]
+    # [[States.PLAYER, States.EMPTY, States.PLAYER],[States.AI,States.EMPTY,States.EMPTY],[States.AI,States.EMPTY,States.EMPTY]]
+    board = Board()
 
     isPlayersTurn = True
     while checkWinState(board):
@@ -217,6 +232,7 @@ def main():
         else:
             aiTurn()
         isPlayersTurn = not isPlayersTurn
+
 
 if __name__ == "__main__":
     main()

@@ -12,11 +12,11 @@ from drawBoard import *
 outcomes = {}
 outList = []
 counter = 0
-for serialization in range(19683): # 683
+for serialization in range(19683):  # 683
     board = Board()
     board.deserialize(serialization)
 
-    if board.isFull() or not board.evaluate() == 0: # if its not already finished
+    if board.isFull() or not board.evaluate() == 0:  # if its not already finished
         continue
     ai, player = board.getSums()
     if ai == player or ai + 1 == player:
